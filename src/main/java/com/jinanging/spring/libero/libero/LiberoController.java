@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/libero")
 public class LiberoController {
 	
-	@GetMapping("/hook")
+	@GetMapping("/hook-view")
 	public String hookView() {
 		return "main/hook";
 	}
 	
-	@GetMapping("/category")
+	@GetMapping("/category-view")
 	public String categoryView() {
 		return "main/category";
 	}

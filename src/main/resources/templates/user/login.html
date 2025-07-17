@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Libero Join</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+
+  .image-box {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .join-box {
+    position: absolute;
+    top: 50%;
+    left: 75%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    color: #000;
+    min-width: 350px;
+  }
+
+  .join-box h2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 36px;
+    margin-bottom: 20px;
+    color: #000;
+  }
+
+  .form-control {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    border-bottom: 1px solid #000;
+    color: #000;
+    border-radius: 0;
+  }
+
+  .form-control::placeholder {
+    color: #555;
+  }
+
+  .btn-custom, .btn-check {
+    background-color: rgba(0,0,0,0.1);
+    color: #000;
+    border: 1px solid #000;
+    width: 100%;
+    transition: background-color 0.3s;
+  }
+
+  .btn-custom:hover, .btn-check:hover {
+    background-color: rgba(0,0,0,0.2);
+    color: #fff;
+  }
+
+  .input-group-append .btn-check {
+    width: auto;
+    white-space: nowrap;
+  }
+
+  .input-group {
+    margin-bottom: 15px;
+  }
+
+
+  .join-links {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .join-links a {
+    margin-top: 8px;
+    color: #666;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .join-links a:hover {
+    color: #000;
+    text-decoration: underline;
+  }
+
+</style>
+</head>
+<body>
+
+<div id="wrap">
+  <div class="image-box">
+    <img src="/static/image/userpage.jpg.png" alt="User Page Image">
+    <div class="join-box">
+      <h2>Welcome Libero</h2>
+
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="아이디">
+      </div>
+
+      <input type="password" class="form-control mb-3" placeholder="비밀번호">
+
+      <button class="btn btn-custom mt-3">로그인</button>
+
+
+      <div class="join-links">
+        <a href="/libero/user/join-view">회원가입</a>
+        <a href="#">비밀번호를 잊으셨나요?</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
