@@ -1,0 +1,29 @@
+@charset "UTF-8";
+
+#wrap{
+	width:1200px;
+	height: 800px;
+	margin : 0 auto;
+}
+
+#backgroundImage{
+	position : relative;
+}
+
+#door{
+	position: absolute;
+	opacity: 0.5;
+	width : 300px;
+	height: 450px;
+  	top: 340px;
+  	left : 600px; 
+	
+}
+
+
+.category {
+	position: absolute;
+	opacity: 0.5;
+	top: 0px;
+	left: 155px;  /* 원하는 위치 조정 */
+}
