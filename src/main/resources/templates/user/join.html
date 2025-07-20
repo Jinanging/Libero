@@ -56,6 +56,12 @@
     margin-bottom: 15px;
   }
 
+  .form-control[readonly] {
+    background: rgba(255, 255, 255, 0.3) !important;
+    color: #000 !important;
+    cursor: pointer;
+  }
+
   .form-control::placeholder {
     color: #555;
   }
@@ -99,7 +105,6 @@
     width: 100%;
   }
 
-  /* 주소검색 모달 */
   .postcode-modal {
     display: none;
     position: fixed;
@@ -116,11 +121,16 @@
 
   .postcode-close-btn {
     position: absolute;
-    top: 5px;
+    top: 10px;
     right: 10px;
     cursor: pointer;
     font-weight: bold;
     font-size: 18px;
+    z-index: 10000;
+    background: #fff;
+    padding: 4px 10px;
+
+
   }
 </style>
 </head>
@@ -132,7 +142,6 @@
     <div class="join-box">
       <h2>Join Libero</h2>
 
-      <!-- 아이디 + 중복확인 -->
       <div class="input-group">
         <input id="idInput" type="text" class="form-control" placeholder="아이디">
         <div class="input-group-append">
@@ -144,98 +153,92 @@
       <input id="passwordCheckInput" type="password" class="form-control" placeholder="비밀번호 확인">
       <input id="nameInput" type="text" class="form-control" placeholder="닉네임">
 
-      <!-- 주소 입력 -->
       <div class="address-group">
-        <input type="text" id="sample3_postcode" class="form-control" placeholder="우편번호">
+        <input type="text" id="sample3_postcode" class="form-control" placeholder="우편번호" readonly>
         <input type="button" onclick="sample3_execDaumPostcode()" value="우편번호 찾기" class="btn btn-check">
-        <input type="text" id="sample3_address" class="form-control" placeholder="주소">
-        <input type="text" id="sample3_extraAddress" class="form-control" placeholder="참고항목">
+        <input type="text" id="sample3_address" class="form-control" placeholder="주소" readonly>
+        <input type="text" id="sample3_extraAddress" class="form-control" placeholder="참고항목" readonly>
         <input type="text" id="sample3_detailAddress" class="form-control" placeholder="상세주소">
-        
       </div>
 
-      <!-- 가입 버튼 -->
       <button id="joinBtn" class="btn btn-custom mt-3">회원가입</button>
-
     </div>
   </div>
 </div>
 
-<!-- 주소검색 모달 -->
 <div id="postcodeModal" class="postcode-modal">
   <div class="postcode-close-btn" onclick="closePostcodeModal()">×</div>
   <div id="postcodeEmbed" style="width:100%; height:100%;"></div>
 </div>
 
-<!-- 스크립트 -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 <script>
-  $("#joinBtn").on("click", function() {
-    let id = $("#idInput").val();
-    let password = $("#passwordInput").val();
-    let passwordCheck = $("#passwordCheckInput").val();
-    let name = $("#nameInput").val();
+$("#joinBtn").on("click", function() {
+  let id = $("#idInput").val();
+  let password = $("#passwordInput").val();
+  let passwordCheck = $("#passwordCheckInput").val();
+  let name = $("#nameInput").val();
 
-    if (id == "") {
-      alert("아이디를 입력해주세요!");
-      return;
-    }
-    if (password == "") {
-      alert("비밀번호를 입력해주세요!");
-      return;
-    }
-    if (passwordCheck == "") {
-      alert("비밀번호 확인을 입력해주세요!");
-      return;
-    }
-    if (password != passwordCheck) {
-      alert("비밀번호가 일치하지 않습니다!");
-      return;
-    }
-    if (name == "") {
-      alert("닉네임 입력해주세요!");
-      return;
-    }
-  });
+  let postcode = $("#sample3_postcode").val();
+  let address = $("#sample3_address").val();
+  let detailAddress = $("#sample3_detailAddress").val();
 
-  function sample3_execDaumPostcode() {
-    document.getElementById('postcodeModal').style.display = 'block';
-    new daum.Postcode({
-      oncomplete: function(data) {
-        var addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
-        var extraAddr = '';
+  if (id == "") { alert("아이디를 입력해주세요!"); return; }
+  if (password == "") { alert("비밀번호를 입력해주세요!"); return; }
+  if (passwordCheck == "") { alert("비밀번호 확인을 입력해주세요!"); return; }
+  if (password != passwordCheck) { alert("비밀번호가 일치하지 않습니다!"); return; }
+  if (name == "") { alert("닉네임을 입력해주세요!"); return; }
+  if (postcode == "") { alert("우편번호를 입력해주세요!"); return; }
+  if (address == "") { alert("주소를 입력해주세요!"); return; }
+  if (detailAddress == "") { alert("상세주소를 입력해주세요!"); return; }
+});
 
-        if(data.userSelectedType === 'R'){
-          if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
-            extraAddr += data.bname;
-          }
-          if(data.buildingName !== '' && data.apartment === 'Y'){
-            extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-          }
-          if(extraAddr !== ''){
-            extraAddr = ' (' + extraAddr + ')';
-          }
-          document.getElementById("sample3_extraAddress").value = extraAddr;
-        } else {
-          document.getElementById("sample3_extraAddress").value = '';
+function sample3_execDaumPostcode() {
+  document.getElementById('postcodeModal').style.display = 'block';
+
+  document.body.onkeydown = function(event) {
+    if (event.key === "Escape") {
+      closePostcodeModal();
+    }
+  };
+
+  new daum.Postcode({
+    oncomplete: function(data) {
+      var addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
+      var extraAddr = '';
+
+      if(data.userSelectedType === 'R'){
+        if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+          extraAddr += data.bname;
         }
+        if(data.buildingName !== '' && data.apartment === 'Y'){
+          extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+        }
+        if(extraAddr !== ''){
+          extraAddr = ' (' + extraAddr + ')';
+        }
+        document.getElementById("sample3_extraAddress").value = extraAddr;
+      } else {
+        document.getElementById("sample3_extraAddress").value = '';
+      }
 
-        document.getElementById('sample3_postcode').value = data.zonecode;
-        document.getElementById("sample3_address").value = addr;
-        document.getElementById("sample3_detailAddress").focus();
+      document.getElementById('sample3_postcode').value = data.zonecode;
+      document.getElementById("sample3_address").value = addr;
+      document.getElementById("sample3_detailAddress").focus();
 
-        closePostcodeModal();
-      },
-      width : '100%',
-      height : '100%'
-    }).embed(document.getElementById('postcodeEmbed'));
-  }
+      closePostcodeModal();
+    },
+    width : '100%',
+    height : '100%'
+  }).embed(document.getElementById('postcodeEmbed'));
+}
 
-  function closePostcodeModal() {
-    document.getElementById('postcodeModal').style.display = 'none';
-  }
+function closePostcodeModal() {
+  document.getElementById('postcodeModal').style.display = 'none';
+  document.body.onkeydown = null;
+}
 </script>
 
 </body>

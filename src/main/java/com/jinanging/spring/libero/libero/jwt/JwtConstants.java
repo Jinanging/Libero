@@ -25,3 +25,4 @@ public class JwtConstants {
     public static final String RT_HEADER = "refresh_token";
     public static final String TOKEN_HEADER_PREFIX = "Bearer ";
 }
+	
