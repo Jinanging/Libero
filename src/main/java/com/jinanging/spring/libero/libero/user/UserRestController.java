@@ -1,6 +1,6 @@
 package com.jinanging.spring.libero.libero.user;
 
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +21,7 @@ public class UserRestController {
 	
 	
 	
-	@PutMapping("/join")
+	@PostMapping("/join")
 	public ApiResponse<?> joinUser(
 			@RequestParam String loginId
 			,@RequestParam String password

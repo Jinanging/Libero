@@ -35,6 +35,7 @@ public class UserService {
         			.address(address)
         			.addressDetail(addressDetail)
         			.addressNumber(addressNumber)
+        			.profile("https://cdn.pixabay.com/photo/2018/04/24/11/32/book-3346785_1280.png")
         			.build();
         
         // 회원가입이 널일떄.

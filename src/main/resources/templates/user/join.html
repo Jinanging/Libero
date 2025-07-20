@@ -185,14 +185,61 @@ $("#joinBtn").on("click", function() {
   let address = $("#sample3_address").val();
   let detailAddress = $("#sample3_detailAddress").val();
 
-  if (id == "") { alert("아이디를 입력해주세요!"); return; }
-  if (password == "") { alert("비밀번호를 입력해주세요!"); return; }
-  if (passwordCheck == "") { alert("비밀번호 확인을 입력해주세요!"); return; }
-  if (password != passwordCheck) { alert("비밀번호가 일치하지 않습니다!"); return; }
-  if (name == "") { alert("닉네임을 입력해주세요!"); return; }
-  if (postcode == "") { alert("우편번호를 입력해주세요!"); return; }
-  if (address == "") { alert("주소를 입력해주세요!"); return; }
-  if (detailAddress == "") { alert("상세주소를 입력해주세요!"); return; }
+  if (id == "") { 
+	  alert("아이디를 입력해주세요!");
+	  return; 
+	  }
+  if (password == "") { 
+	  alert("비밀번호를 입력해주세요!"); 
+	  return; 
+	  }
+  if (passwordCheck == "") {
+	  alert("비밀번호 확인을 입력해주세요!"); 
+	  return; 
+	  }
+  if (password != passwordCheck) {
+	  alert("비밀번호가 일치하지 않습니다!");
+	  return; 
+	  }
+  if (name == "") {
+	  alert("닉네임을 입력해주세요!");
+	  return; 
+	  }
+  if (postcode == "") {
+	  alert("우편번호를 입력해주세요!"); 
+	  return;
+	  }
+  if(address == "") {
+	  alert("주소를 입력해주세요!");
+  	  return; 
+  	  }
+  if(detailAddress == ""){
+	  alert("상세주소를 입력해주세요!");
+	  return;
+	  }
+  $.ajax({
+		type: "post",
+		url: "/libero/user/join",
+		data: {
+			loginId: id,
+			password: password,
+			name: name,
+			address: address,
+			detailAddress: detailAddress,
+			addressNumber: postcode
+		},
+		success: function(response) {
+			if (response.result === "success") {
+				location.href = "/libero/user/login-view";
+			} else {
+				alert("회원가입 실패: " + response.message);
+			}
+		},
+		error: function() {
+			alert("로그인 중 에러 발생");
+		}
+	});
+
 });
 
 function sample3_execDaumPostcode() {
