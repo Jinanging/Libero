@@ -22,3 +22,5 @@ spring:
 
 mybatis:
   mapper-locations: mappers/*Mapper.xml
+
+

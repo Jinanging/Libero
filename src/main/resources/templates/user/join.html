@@ -1,291 +1,315 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Libero Join</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Libero Join</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-  }
-
-  .image-box {
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .image-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-  }
-
-  .join-box {
-    position: absolute;
-    top: 50%;
-    left: 75%;
-    transform: translate(-50%, -50%);
-    background: transparent;
-    padding: 30px;
-    border-radius: 12px;
-    text-align: center;
-    color: #000;
-    min-width: 400px;
-  }
-
-  .join-box h2 {
-    font-family: 'Great Vibes', cursive;
-    font-size: 36px;
-    margin-bottom: 20px;
-    color: #000;
-  }
-
-  .form-control {
-    background: rgba(255, 255, 255, 0.3);
-    border: none;
-    border-bottom: 1px solid #000;
-    color: #000;
-    border-radius: 0;
-    margin-bottom: 15px;
-  }
-
-  .form-control[readonly] {
-    background: rgba(255, 255, 255, 0.3) !important;
-    color: #000 !important;
-    cursor: pointer;
-  }
-
-  .form-control::placeholder {
-    color: #555;
-  }
-
-  .btn-custom, .btn-check {
-    background-color: rgba(0,0,0,0.1);
-    color: #000;
-    border: 1px solid #000;
-    width: 100%;
-    transition: background-color 0.3s;
-    font-size: 15px;
-  }
-
-  .btn-custom:hover, .btn-check:hover {
-    background-color: rgba(0,0,0,0.2);
-    color: #fff;
-  }
-
-  .input-group-append .btn-check {
-    width: auto;
-    white-space: nowrap;
-  }
-
-  .input-group {
-    margin-bottom: 15px;
-  }
-
-  .address-group {
-    text-align: left;
-    margin-top: 20px;
-  }
-
-  .address-group input[type="button"] {
-    width: 100%;
-    margin-bottom: 10px;
-    font-size: 15px;
-    font-family: Arial, sans-serif;
-  }
-
-  .address-group input[type="text"] {
-    width: 100%;
-  }
-
-  .postcode-modal {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 500px;
-    height: 500px;
-    background: #fff;
-    border: 2px solid #000;
-    box-shadow: 0 0 15px rgba(0,0,0,0.3);
-  }
-
-  .postcode-close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 18px;
-    z-index: 10000;
-    background: #fff;
-    padding: 4px 10px;
-
-
-  }
-</style>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .image-box {
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        .image-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+        .join-box {
+            position: absolute;
+            top: 50%;
+            left: 75%;
+            transform: translate(-50%, -50%);
+            background: transparent;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            color: #000;
+            min-width: 400px;
+        }
+        .join-box h2 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #000;
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.3);
+            border: none;
+            border-bottom: 1px solid #000;
+            color: #000;
+            border-radius: 0;
+            margin-bottom: 15px;
+        }
+        .form-control[readonly] {
+            background: rgba(255, 255, 255, 0.3) !important;
+            color: #000 !important;
+            cursor: pointer;
+        }
+        .form-control::placeholder {
+            color: #555;
+        }
+        .btn-custom,
+        .btn-check {
+            background-color: rgba(0,0,0,0.1);
+            color: #000;
+            border: 1px solid #000;
+            width: 100%;
+            transition: background-color 0.3s;
+            font-size: 15px;
+        }
+        .btn-custom:hover,
+        .btn-check:hover {
+            background-color: rgba(0,0,0,0.2);
+            color: #fff;
+        }
+        .input-group-append .btn-check {
+            width: auto;
+            white-space: nowrap;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .address-group {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .address-group input[type="button"] {
+            width: 100%;
+            margin-bottom: 10px;
+            font-size: 15px;
+            font-family: Arial, sans-serif;
+        }
+        .address-group input[type="text"] {
+            width: 100%;
+        }
+        .postcode-modal {
+            display: none;
+            position: fixed;
+            z-index: 9999;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background: #fff;
+            border: 2px solid #000;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+        .postcode-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            z-index: 10000;
+            background: #fff;
+            padding: 4px 10px;
+        }
+    </style>
 </head>
+
 <body>
 
 <div id="wrap">
-  <div class="image-box">
-    <img src="/static/image/userpage.jpg.png" alt="User Page Image">
-    <div class="join-box">
-      <h2>Join Libero</h2>
+    <div class="image-box">
+        <img src="/static/image/userpage.jpg.png" alt="User Page Image">
+        <div class="join-box">
+            <h2>Join Libero</h2>
 
-      <div class="input-group">
-        <input id="idInput" type="text" class="form-control" placeholder="아이디">
-        <div class="input-group-append">
-          <button class="btn btn-check">중복확인</button>
+            <div class="input-group">
+                <input id="idInput" type="text" class="form-control" placeholder="아이디">
+                <div class="input-group-append">
+                    <button id="checkDuplicateBtn" class="btn btn-check">중복확인</button>
+                </div>
+            </div>
+
+            <input id="passwordInput" type="password" class="form-control" placeholder="비밀번호">
+            <input id="passwordCheckInput" type="password" class="form-control" placeholder="비밀번호 확인">
+            <input id="nameInput" type="text" class="form-control" placeholder="닉네임">
+
+            <div class="address-group">
+                <input type="text" id="sample3_postcode" class="form-control" placeholder="우편번호" readonly>
+                <input type="button" onclick="sample3_execDaumPostcode()" value="우편번호 찾기" class="btn btn-check">
+                <input type="text" id="sample3_address" class="form-control" placeholder="주소" readonly>
+                <input type="text" id="sample3_extraAddress" class="form-control" placeholder="참고항목" readonly>
+                <input type="text" id="sample3_detailAddress" class="form-control" placeholder="상세주소">
+            </div>
+
+            <button id="joinBtn" class="btn btn-custom mt-3">회원가입</button>
         </div>
-      </div>
-
-      <input id="passwordInput" type="password" class="form-control" placeholder="비밀번호">
-      <input id="passwordCheckInput" type="password" class="form-control" placeholder="비밀번호 확인">
-      <input id="nameInput" type="text" class="form-control" placeholder="닉네임">
-
-      <div class="address-group">
-        <input type="text" id="sample3_postcode" class="form-control" placeholder="우편번호" readonly>
-        <input type="button" onclick="sample3_execDaumPostcode()" value="우편번호 찾기" class="btn btn-check">
-        <input type="text" id="sample3_address" class="form-control" placeholder="주소" readonly>
-        <input type="text" id="sample3_extraAddress" class="form-control" placeholder="참고항목" readonly>
-        <input type="text" id="sample3_detailAddress" class="form-control" placeholder="상세주소">
-      </div>
-
-      <button id="joinBtn" class="btn btn-custom mt-3">회원가입</button>
     </div>
-  </div>
 </div>
 
 <div id="postcodeModal" class="postcode-modal">
-  <div class="postcode-close-btn" onclick="closePostcodeModal()">×</div>
-  <div id="postcodeEmbed" style="width:100%; height:100%;"></div>
+    <div class="postcode-close-btn" onclick="closePostcodeModal()">×</div>
+    <div id="postcodeEmbed" style="width:100%; height:100%;"></div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 <script>
-$("#joinBtn").on("click", function() {
-  let id = $("#idInput").val();
-  let password = $("#passwordInput").val();
-  let passwordCheck = $("#passwordCheckInput").val();
-  let name = $("#nameInput").val();
+    let isIdChecked = false;
 
-  let postcode = $("#sample3_postcode").val();
-  let address = $("#sample3_address").val();
-  let detailAddress = $("#sample3_detailAddress").val();
+    $("#checkDuplicateBtn").on("click", function() {
+        let id = $("#idInput").val();
 
-  if (id == "") { 
-	  alert("아이디를 입력해주세요!");
-	  return; 
-	  }
-  if (password == "") { 
-	  alert("비밀번호를 입력해주세요!"); 
-	  return; 
-	  }
-  if (passwordCheck == "") {
-	  alert("비밀번호 확인을 입력해주세요!"); 
-	  return; 
-	  }
-  if (password != passwordCheck) {
-	  alert("비밀번호가 일치하지 않습니다!");
-	  return; 
-	  }
-  if (name == "") {
-	  alert("닉네임을 입력해주세요!");
-	  return; 
-	  }
-  if (postcode == "") {
-	  alert("우편번호를 입력해주세요!"); 
-	  return;
-	  }
-  if(address == "") {
-	  alert("주소를 입력해주세요!");
-  	  return; 
-  	  }
-  if(detailAddress == ""){
-	  alert("상세주소를 입력해주세요!");
-	  return;
-	  }
-  $.ajax({
-		type: "post",
-		url: "/libero/user/join",
-		data: {
-			loginId: id,
-			password: password,
-			name: name,
-			address: address,
-			detailAddress: detailAddress,
-			addressNumber: postcode
-		},
-		success: function(response) {
-			if (response.result === "success") {
-				location.href = "/libero/user/login-view";
-			} else {
-				alert("회원가입 실패: " + response.message);
-			}
-		},
-		error: function() {
-			alert("로그인 중 에러 발생");
-		}
-	});
+        if (id == "") {
+            alert("아이디를 입력해주세요!");
+            return;
+        }
 
-});
+        $.ajax({
+            type: "get",
+            url: "/libero/user/isDuplicate",
+            data: { loginId: id },
+            success: function(response) {
+                if (response.result === "fail") {
+                    alert("이미 사용 중인 아이디입니다.");
+                    isIdChecked = false;
+                } else {
+                    alert("사용 가능한 아이디입니다.");
+                    isIdChecked = true;
+                }
+            },
+            error: function() {
+                alert("중복확인 중 오류가 발생했습니다.");
+                isIdChecked = false;
+            }
+        });
+    });
 
-function sample3_execDaumPostcode() {
-  document.getElementById('postcodeModal').style.display = 'block';
+    $("#joinBtn").on("click", function() {
+        let id = $("#idInput").val();
+        let password = $("#passwordInput").val();
+        let passwordCheck = $("#passwordCheckInput").val();
+        let name = $("#nameInput").val();
+        let postcode = $("#sample3_postcode").val();
+        let address = $("#sample3_address").val();
+        let detailAddress = $("#sample3_detailAddress").val();
 
-  document.body.onkeydown = function(event) {
-    if (event.key === "Escape") {
-      closePostcodeModal();
+        if (id == "") {
+            alert("아이디를 입력해주세요!");
+            return;
+        }
+
+        if (!isIdChecked) {
+            alert("아이디 중복확인을 해주세요!");
+            return;
+        }
+
+        if (password == "") {
+            alert("비밀번호를 입력해주세요!");
+            return;
+        }
+
+        if (passwordCheck == "") {
+            alert("비밀번호 확인을 입력해주세요!");
+            return;
+        }
+
+        if (password != passwordCheck) {
+            alert("비밀번호가 일치하지 않습니다!");
+            return;
+        }
+
+        if (name == "") {
+            alert("닉네임을 입력해주세요!");
+            return;
+        }
+
+        if (postcode == "") {
+            alert("우편번호를 입력해주세요!");
+            return;
+        }
+
+        if (address == "") {
+            alert("주소를 입력해주세요!");
+            return;
+        }
+
+        if (detailAddress == "") {
+            alert("상세주소를 입력해주세요!");
+            return;
+        }
+        $.ajax({
+            type: "post",
+            url: "/libero/user/join",
+            data: {
+                loginId: id,
+                password: password,
+                name: name,
+                address: address,
+                addressDetail: detailAddress,
+                addressNumber: postcode
+            },
+            success: function(response) {
+                if (response.result === "success") {
+                    location.href = "/libero/user/login-view";
+                } else {
+                    alert("회원가입 실패: " + response.message);
+                }
+            },
+            error: function() {
+                alert("회원가입 중 에러 발생");
+            }
+        });
+    });
+
+    function sample3_execDaumPostcode() {
+        document.getElementById('postcodeModal').style.display = 'block';
+        document.body.onkeydown = function(event) {
+            if (event.key === "Escape") {
+                closePostcodeModal();
+            }
+        };
+
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
+                var extraAddr = '';
+
+                if (data.userSelectedType === 'R') {
+                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+                        extraAddr += data.bname;
+                    }
+                    if (data.buildingName !== '' && data.apartment === 'Y') {
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    if (extraAddr !== '') {
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                    document.getElementById("sample3_extraAddress").value = extraAddr;
+                } else {
+                    document.getElementById("sample3_extraAddress").value = '';
+                }
+
+                document.getElementById('sample3_postcode').value = data.zonecode;
+                document.getElementById("sample3_address").value = addr;
+                document.getElementById("sample3_detailAddress").focus();
+
+                closePostcodeModal();
+            },
+            width: '100%',
+            height: '100%'
+        }).embed(document.getElementById('postcodeEmbed'));
     }
-  };
 
-  new daum.Postcode({
-    oncomplete: function(data) {
-      var addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
-      var extraAddr = '';
-
-      if(data.userSelectedType === 'R'){
-        if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
-          extraAddr += data.bname;
-        }
-        if(data.buildingName !== '' && data.apartment === 'Y'){
-          extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-        }
-        if(extraAddr !== ''){
-          extraAddr = ' (' + extraAddr + ')';
-        }
-        document.getElementById("sample3_extraAddress").value = extraAddr;
-      } else {
-        document.getElementById("sample3_extraAddress").value = '';
-      }
-
-      document.getElementById('sample3_postcode').value = data.zonecode;
-      document.getElementById("sample3_address").value = addr;
-      document.getElementById("sample3_detailAddress").focus();
-
-      closePostcodeModal();
-    },
-    width : '100%',
-    height : '100%'
-  }).embed(document.getElementById('postcodeEmbed'));
-}
-
-function closePostcodeModal() {
-  document.getElementById('postcodeModal').style.display = 'none';
-  document.body.onkeydown = null;
-}
+    function closePostcodeModal() {
+        document.getElementById('postcodeModal').style.display = 'none';
+        document.body.onkeydown = null;
+    }
 </script>
 
 </body>

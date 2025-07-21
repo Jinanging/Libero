@@ -1,5 +1,6 @@
 package com.jinanging.spring.libero.libero.user;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,17 @@ public class UserRestController {
 	    }
 	
 	
+	@GetMapping("/isDuplicate")
+	public ApiResponse<?> dupicatedIdCheck(@RequestParam String loginId){
+		
+		boolean result = userService.duplicatedId(loginId);
+		if(result) {
+			return ApiResponse.fail(ResponseCode.DUPLICATE_ID);
+		}
+		else {
+			return ApiResponse.success(null);
+		}
+	}
 	
 	@PostMapping("/join")
 	public ApiResponse<?> joinUser(
@@ -27,11 +39,11 @@ public class UserRestController {
 			,@RequestParam String password
 			,@RequestParam String name
 			,@RequestParam String address
-			,@RequestParam String detailAddress
+			,@RequestParam String addressDetail
 			,@RequestParam String addressNumber
-			) {
+			) throws Exception {
 		
-		boolean result = userService.joinUser(loginId, password, name, address, detailAddress, addressNumber);
+		boolean result = userService.joinUser(loginId, password, name, address, addressDetail, addressNumber);
 
         if(result) {
             return ApiResponse.success(null); 

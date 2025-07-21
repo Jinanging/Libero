@@ -6,7 +6,7 @@ import com.jinanging.spring.libero.libero.user.domain.User;
 
 public interface UserRepository extends JpaRepository<User, Long>{
 	
-	
+	int countByLoginId(String loginId); 
 	
 
 }
