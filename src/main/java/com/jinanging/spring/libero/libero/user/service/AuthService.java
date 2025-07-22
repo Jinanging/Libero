@@ -23,9 +23,11 @@ public class AuthService {
 
     public ApiResponse<String> login(String loginId, String password) {
     	Optional<User> optionalUser = userRepository.findByLoginId(loginId);
+    	// 찾는 유적 ㅏ있으면
     	if (optionalUser.isEmpty()) {
     	    return ApiResponse.fail(ResponseCode.LOGIN_FAILED);
     	}
+    	
     	User user = optionalUser.get();
 
 

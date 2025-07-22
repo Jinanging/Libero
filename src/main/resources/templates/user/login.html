@@ -111,12 +111,12 @@
       <h2>Welcome Libero</h2>
 
       <div class="input-group">
-        <input type="text" class="form-control" placeholder="아이디">
+        <input id = "idInput" type="text" class="form-control" placeholder="아이디">
       </div>
 
-      <input type="password" class="form-control mb-3" placeholder="비밀번호">
+      <input id = "passwordInput" type="password" class="form-control mb-3" placeholder="비밀번호">
 
-      <button class="btn btn-custom mt-3">로그인</button>
+      <button id = "loginBtn" class="btn btn-custom mt-3">로그인</button>
 
 
       <div class="join-links">
@@ -130,6 +130,38 @@
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script>
+	$("#loginBtn").on("click",function(){
+		let id = $("#idInput").val();
+		let password = $("#passwordInput").val();
+		
+		if(id ==""){
+			alert("아이디를 입력하세요!");
+			return;
+		}
+		if(password == ""){
+			alert("비밀번호를 입력하세요!");
+			return;
+		}
+		
+		$.ajax({
+            type: "post",
+            url: "/libero/user/login",
+            data: {
+                loginId: id,
+                password: password,
+            },
+            success: function(response) {
+                if (response.result === "success") {
+                    location.href = "/libero/book/list-view";
+                } else {
+                    alert("로그인 실패: " + response.message);
+                }
+            },
+            error: function() {
+                alert("로그인 중 에러 발생");
+            }
+        });
+	});
 
 
 </script>
