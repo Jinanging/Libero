@@ -77,12 +77,54 @@ public class JwtProvider {
     public Long getExpirationTime(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getExpiration().getTime();
     }
+    
+    public String getUserName(String token) {
+        return (String) Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .get("userName");
+    }
+
+    public String getAddress(String token) {
+        return (String) Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .get("address");
+    }
+
+    public String getAddressDetail(String token) {
+        return (String) Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .get("addressDetail");
+    }
+
+    public String getAddressNumber(String token) {
+        return (String) Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody()
+            .get("addressNumber");
+    }
+
 
     /**
      * Claims 정보 생성
      * 중복검사를 진행하는 user의 로그인 아이디로 진행
      */
     private Claims getClaims(User user) {
-        return Jwts.claims().setSubject(user.getLoginId());
+        Claims claims = Jwts.claims().setSubject(user.getLoginId());
+        claims.put("userName", user.getName());
+        claims.put("address", user.getAddress());          // 기본 주소
+        claims.put("addressDetail", user.getAddressDetail());  // 상세주소
+        claims.put("addressNumber", user.getAddressNumber());  // 우편번호
+        return claims;
     }
 }
