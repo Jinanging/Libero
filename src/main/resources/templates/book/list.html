@@ -12,15 +12,23 @@
 <body>
 
   <header>
-    <div class="logo">Libero</div>
-    <div class="search-bar">
-      <input type="text" placeholder="도서를 검색해보세요" />
-      <button type="submit" aria-label="검색">🔍</button>
-    </div>
-    <div class="login-btns">
-      <a href="/libero/user/login-view">로그인</a> | <a href="/libero/user/join-view">회원가입</a>
-    </div>
-  </header>
+	  <div class="logo">Libero</div>
+		  <form class="search-bar d-flex" method="get" action="/libero/book/search-view">
+		    <input type="text" name="keyword" placeholder="도서를 검색해보세요" required />
+		    <button type="submit" aria-label="검색">🔍</button>
+		  </form>
+	  <div class="login-btns">
+		  <span th:if="${userName != null}">
+		    <span th:text="${userName}">닉네임</span> | 
+		    <a class = "btn" id ="logoutBtn">로그아웃</a>
+		    <a class ="btn">장바구니</a>
+		  </span>
+		  <span th:unless="${userName != null}">
+		    <a href="/libero/user/login-view">로그인</a> | 
+		    <a href="/libero/user/join-view">회원가입</a>
+		  </span>
+	  </div>
+</header>
 
   <nav class="d-flex justify-content-between gap-3 py-2 bg-light">
 	  <a href="/libero/book/list-view?categoryId=656" class="nav-link px-3">문학</a>
@@ -42,11 +50,32 @@
         <div class="book-info">
           <div class="book-title" th:text="${book.title}">책 제목</div>
           <div class="book-author" th:text="${book.author}">작가 이름</div>
-          <div class="book-rating">★ 4.8</div>
         </div>
       </div>
     </div>
   </main>
+  
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+$("#logoutBtn").on("click", function () {
+ 	  $.ajax({
+        type: "post",
+        url: "/libero/user/logout",
+        success: function (response) {
+            if (response.result === "success") {
+                location.href = "/libero/book/list-view?categoryId=1";
+            } else {
+                alert("로그아웃 실패: " + response.message);
+            }
+        },
+        error: function () {
+            alert("로그아웃 중 오류가 발생했습니다.");
+        }
+    });
+});
+
+</script>
 </body>
 </html>

@@ -17,14 +17,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-// Slf4j -logger
-
 @Slf4j
 @Component
-@RequiredArgsConstructor  // provider 자동생성
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-	//의존성 주입 
     private final JwtProvider jwtProvider;
 
     @Override
@@ -33,38 +30,43 @@ public class JwtFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 요청 헤더에서 토큰 조회
+        // 1. 토큰 추출 (헤더 or 쿠키)
         String token = resolveToken(request);
 
-        // 토큰이 존재하고 유효성 검증 통과 시
+        // 2. 토큰이 존재하고 유효하다면 인증 처리
         if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
-            // 토큰에서 loginId 추출
             String loginId = jwtProvider.getLoginID(token);
 
-            //  UsernamePasswordAuthenticationToken 생성 비밀번호는 비우고(보안), 권한도 따로 구분안해놨음 ㅎㅎ
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(loginId, null, null);
 
-            // 인증 정보에 요청 세부정보 설정
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            // SecurityContext에 인증 객체 등록
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
-        // 다음 필터로 요청 넘기기
+        // 3. 다음 필터로 요청 전달
         filterChain.doFilter(request, response);
     }
 
-    // Request Header에서 토큰 조회 및 Bearer 문자열 제거 후 반환하는 메소드
+    // 헤더 Authorization 또는 쿠키에서 토큰을 꺼내는 메서드
     private String resolveToken(HttpServletRequest request) {
+        // 1) Authorization 헤더에서 토큰 추출 (Bearer 토큰)
         String token = request.getHeader("Authorization");
-
-        // Token 정보 존재 여부 및 Bearer 토큰인지 확인 -> Bearer부분 잘라내기
         if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
-            return token.substring(7);
+            return token.substring(7);  // "Bearer " 다음 부분만 리턴
         }
 
+        // 2) 헤더에 없으면 쿠키에서 "Authorization" 이름으로 토큰 찾기
+        if (request.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
+                if ("Authorization".equals(cookie.getName()) && StringUtils.hasText(cookie.getValue())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+
+        // 토큰이 없으면 null 리턴
         return null;
     }
 }

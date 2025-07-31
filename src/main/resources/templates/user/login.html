@@ -152,6 +152,7 @@
             },
             success: function(response) {
                 if (response.result === "success") {
+                	localStorage.setItem("accessToken", response.data);
                     location.href = "/libero/book/list-view?categoryId=1";
                 } else {
                     alert("로그인 실패: " + response.message);

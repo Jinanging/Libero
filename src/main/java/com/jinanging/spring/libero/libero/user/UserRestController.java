@@ -1,15 +1,21 @@
 package com.jinanging.spring.libero.libero.user;
 
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jinanging.spring.libero.libero.api.ApiResponse;
 import com.jinanging.spring.libero.libero.api.ResponseCode;
 import com.jinanging.spring.libero.libero.user.service.AuthService;
 import com.jinanging.spring.libero.libero.user.service.UserService;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("libero/user")
@@ -26,11 +32,34 @@ public class UserRestController {
 	 
 	 @PostMapping("/login")
 	 public ApiResponse<String> userLogin(
-	         @RequestParam String loginId,
-	         @RequestParam String password) {
-		 //api는 그저 연결할 뿐이니까 비교 하는 추가 기능은 서비스에서 하는게!
-	     return authService.login(loginId, password);
+	     @RequestParam String loginId,
+	     @RequestParam String password,
+	     HttpServletResponse response 
+	 ) {
+	     ApiResponse<String> result = authService.login(loginId, password);
+
+	     if ("success".equals(result.getResult())) {
+	         String token = result.getData();
+	         Cookie cookie = new Cookie("Authorization", token);
+	         cookie.setHttpOnly(true); // JavaScript에서 접근 못하게!
+	         cookie.setPath("/"); 
+	         cookie.setMaxAge(60 * 60); 
+	         response.addCookie(cookie);
+	     }
+
+	     return result;
 	 }
+	 
+	 @PostMapping("/logout")
+	 @ResponseBody
+	 public  ApiResponse<Void> logoutAjax(HttpServletResponse response) {
+	     Cookie cookie = new Cookie("Authorization", null);
+	     cookie.setMaxAge(0);
+	     cookie.setPath("/");
+	     response.addCookie(cookie);
+	     return ApiResponse.success(null);
+	 }
+
 	
 	@GetMapping("/isDuplicate")
 	public ApiResponse<?> dupicatedIdCheck(@RequestParam String loginId){
