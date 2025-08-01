@@ -58,6 +58,28 @@
     </div>
   </div>
 </main>
+ <div class="pagination d-flex justify-content-center my-4">
+  <!-- 첫 페이지로 이동 -->
+  <a class="btn btn-outline-secondary mx-1"
+     th:href="@{/libero/book/search-view(keyword=${keyword}, page=1)}"
+     th:if="${currentPage > 1}">&laquo;</a>
+
+  <!-- 동적 페이지 번호 3개 보여주기 -->
+  <span th:with="startPage=${T(java.lang.Math).max(1, currentPage - 1)},
+                 endPage=${T(java.lang.Math).min(totalPages, startPage + 2)}">
+    <span th:each="i : ${#numbers.sequence(startPage, endPage)}">
+      <a class="btn mx-1"
+         th:href="@{/libero/book/search-view(keyword=${keyword}, page=${i})}"
+         th:classappend="${currentPage == i} ? 'btn-primary' : 'btn-outline-primary'"
+         th:text="${i}"></a>
+    </span>
+  </span>
+
+  <!-- 마지막 페이지로 이동 -->
+  <a class="btn btn-outline-secondary mx-1"
+     th:href="@{/libero/book/search-view(keyword=${keyword}, page=${totalPages})}"
+     th:if="${currentPage < totalPages}">&raquo;</a>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>

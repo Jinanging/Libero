@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8" />
+  <title>Libero - 책 상세 정보</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<header>
+  <div class="logo">Libero</div>
+  <form class="search-bar d-flex" method="get" action="/libero/book/search-view">
+    <input type="text" name="keyword" placeholder="도서를 검색해보세요" required />
+    <button type="submit" aria-label="검색">🔍</button>
+  </form>
+  <div class="login-btns">
+    <span th:if="${userName != null}">
+      <span th:text="${userName}">닉네임</span> | 
+      <a class="btn" id="logoutBtn">로그아웃</a>
+      <a class="btn">장바구니</a>
+    </span>
+    <span th:unless="${userName != null}">
+      <a href="/libero/user/login-view">로그인</a> | 
+      <a href="/libero/user/join-view">회원가입</a>
+    </span>
+  </div>
+</header>
+
+<nav class="d-flex justify-content-between gap-3 py-2 bg-light">
+  <a href="/libero/book/list-view?categoryId=656" class="nav-link px-3">문학</a>
+  <a href="/libero/book/list-view?categoryId=38401" class="nav-link px-3">컴퓨터</a>
+  <a href="/libero/book/list-view?categoryId=1237" class="nav-link px-3">종교</a>
+  <a href="/libero/book/list-view?categoryId=798" class="nav-link px-3">사회과학</a>
+  <a href="/libero/book/list-view?categoryId=90855" class="nav-link px-3">자연과학</a>
+  <a href="/libero/book/list-view?categoryId=50966" class="nav-link px-3">음악</a>
+  <a href="/libero/book/list-view?categoryId=517" class="nav-link px-3">예술</a>
+  <a href="/libero/book/list-view?categoryId=1" class="nav-link px-3">전체</a>
+  <a href="/libero/diary" class="nav-link px-3">독서일기</a>
+</nav>
+
+<main class="detail-container d-flex">
+  <img th:src="${#strings.replace(book['cover'], 'coversum', 'cover500')}" alt="책 이미지" class="book-cover" />
+
+  <div class="book-info">
+    <h1 class="detail-book-title" th:text="${book['title']}">책 제목</h1>
+    <div class="book-author" th:text="'저자: ' + ${book['author']}">작가 이름</div>
+
+    <div class="book-meta" th:text="'출판사: ' + ${book['publisher']}">출판사</div>
+    <div class="book-meta" th:text="'출판일: ' + ${book['pubDate']}">출판일</div>
+    <div class="book-meta" th:text="'ISBN: ' + ${book['isbn']}">ISBN</div>
+
+    <div class="book-description" th:text="${book['description']}">책 소개 및 상세 내용이 여기에 표시됩니다.</div>
+  </div>
+</main>
+
+
+<section class="review-section">
+  <div class="review-box shadow-sm">
+    <h3>📚 Libero 리뷰</h3>
+
+    <!-- 별점 입력 -->
+    <div class="rating-group">
+      <label class="rating-label">별점</label>
+      <div class="star-rating-input">
+		  <div class="stars">
+			  <input type="radio" id="star5" name="rating" value="5" />
+			  <label for="star5">★</label>
+			
+			  <input type="radio" id="star4" name="rating" value="4" />
+			  <label for="star4">★</label>
+			
+			  <input type="radio" id="star3" name="rating" value="3" />
+			  <label for="star3">★</label>
+			
+			  <input type="radio" id="star2" name="rating" value="2" />
+			  <label for="star2">★</label>
+			
+			  <input type="radio" id="star1" name="rating" value="1" />
+			  <label for="star1">★</label>
+			</div>
+		</div>
+    </div>
+
+    <!-- 댓글 작성 -->
+    <div class="comment-form">
+      <textarea placeholder="후기를 입력해 주세요" rows="3"></textarea>
+      <button type="button" class="submit-btn">등록</button>
+    </div>
+
+    <!-- 댓글 목록 -->
+    <div class="comment-list">
+      <div class="comment-item">
+        <div class="comment-stars">★★★★★</div>
+        <div class="comment-text">너네잉1 정말 멋진 책이에요!</div>
+      </div>
+      <div class="comment-item">
+        <div class="comment-stars">★★★★☆</div>
+        <div class="comment-text">내용은 정말 알찼어요!</div>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+
+</script>
+
+</body>
+</html>

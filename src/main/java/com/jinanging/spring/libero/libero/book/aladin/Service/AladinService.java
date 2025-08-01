@@ -17,9 +17,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class AladinService {
 
-	private final RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
     private final String ttbKey;
-    
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AladinService(RestTemplate restTemplate, @Value("${aladin.ttb-key}") String ttbKey) {
@@ -28,40 +28,63 @@ public class AladinService {
     }
     
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> getBooksByKeyword(String keyword) {
-        String url = UriComponentsBuilder.fromUriString("http://www.aladin.co.kr/ttb/api/ItemSearch.aspx")
+    public List<Map<String, Object>> getBooksById(long itemId) {
+        String url = UriComponentsBuilder.fromUriString("http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx")
                 .queryParam("ttbkey", ttbKey)
-                .queryParam("Query", keyword)
-                .queryParam("QueryType", "Keyword")
-                .queryParam("SearchTarget", "Book")
-                .queryParam("MaxResults", 10)
-                .queryParam("start", 1)
-                .queryParam("output", "js")  
+                .queryParam("ItemId", itemId)
+                .queryParam("ItemIdType", "ItemId")
+                .queryParam("Cover", "Mid")
+                .queryParam("output", "js")
+                .queryParam("Optresult","ratingInfo")
                 .queryParam("Version", "20131101")
                 .build()
                 .toUriString();
-
-
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
             String body = response.getBody();
 
 
-
             if (body != null) {
                 Map<String, Object> map = objectMapper.readValue(body, Map.class);
-
-
                 if (map.containsKey("item")) {
                     return (List<Map<String, Object>>) map.get("item");
-                } 
-                    
-                
-            } 
-                
-            
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("API 호출 또는 JSON 파싱 중 오류 발생:");
+            e.printStackTrace();
+        }
 
+        return new ArrayList<>();
+    }
+    
+    
+
+    @SuppressWarnings("unchecked")
+    public List<Map<String, Object>> getBooksByKeyword(String keyword, int page) {
+        String url = UriComponentsBuilder.fromUriString("http://www.aladin.co.kr/ttb/api/ItemSearch.aspx")
+                .queryParam("ttbkey", ttbKey)
+                .queryParam("Query", keyword)
+                .queryParam("QueryType", "Keyword")
+                .queryParam("SearchTarget", "Book")
+                .queryParam("MaxResults", 10)
+                .queryParam("start", page)  // 페이지 반영
+                .queryParam("output", "js")
+                .queryParam("Version", "20131101")
+                .build()
+                .toUriString();
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
+            String body = response.getBody();
+            
+            if (body != null) {
+                Map<String, Object> map = objectMapper.readValue(body, Map.class);
+                if (map.containsKey("item")) {
+                    return (List<Map<String, Object>>) map.get("item");
+                }
+            }
         } catch (Exception e) {
             System.out.println("API 호출 또는 JSON 파싱 중 오류 발생:");
             e.printStackTrace();
@@ -70,26 +93,20 @@ public class AladinService {
         return new ArrayList<>();
     }
 
-    
-    
-    
-    //경고 무시
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> getBooksByCategory(int categoryId) {
+    public List<Map<String, Object>> getBooksByCategory(int categoryId, int page) {
         String url = UriComponentsBuilder.fromUriString("https://www.aladin.co.kr/ttb/api/ItemList.aspx")
                 .queryParam("ttbkey", ttbKey)
                 .queryParam("QueryType", "ItemNewAll")
                 .queryParam("MaxResults", 10)
-                .queryParam("start", 1)
+                .queryParam("start", page)  // 페이지 반영
                 .queryParam("SearchTarget", "Book")
                 .queryParam("CategoryId", categoryId)
                 .queryParam("output", "js")
                 .queryParam("Version", "20131101")
                 .toUriString();
-        
+
         try {
-        	
-        	
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
                     url,
                     HttpMethod.GET,
@@ -98,18 +115,14 @@ public class AladinService {
             );
 
             Map<String, Object> body = response.getBody();
-          
-            
-      
+
             if (body != null && body.containsKey("item")) {
                 return (List<Map<String, Object>>) body.get("item");
             }
-        } 
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         return new ArrayList<>();
     }
-    
-    
 }

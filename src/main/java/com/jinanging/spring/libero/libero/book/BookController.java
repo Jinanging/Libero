@@ -1,11 +1,9 @@
 package com.jinanging.spring.libero.libero.book;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.jinanging.spring.libero.libero.book.aladin.Service.AladinService;
 import com.jinanging.spring.libero.libero.jwt.JwtProvider;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/libero/book")
@@ -27,18 +28,36 @@ public class BookController {
         this.aladinService = aladinService;
         this.jwtProvider = jwtProvider;
     }
-    
+    // 책 디테일 뷰 가져오기
+    @GetMapping("/detail-view")
+    public String bookDetail(@RequestParam("itemId") long itemId, Model model) {
+        List<Map<String, Object>> books = aladinService.getBooksById(itemId);
+
+        if (books != null && !books.isEmpty() && books.get(0) != null) {
+            Map<String, Object> book = books.get(0);
+            model.addAttribute("book", book);
+        } else {
+            // 에러 페이지로 보내거나 빈 모델 넘기기
+            model.addAttribute("book", new HashMap<>());
+            model.addAttribute("error", "도서 정보를 불러올 수 없습니다.");
+        }
+
+        return "book/detail"; // /templates/book/detail.html
+    }
     @GetMapping("/search-view")
     public String showSearchList(@RequestParam String keyword,
+                                 @RequestParam(defaultValue = "1") int page,
                                  Model model,
                                  HttpServletRequest request) {
 
-        // 1. 알라딘 API를 통해 키워드 기반 도서 검색
-        List<Map<String, Object>> books = aladinService.getBooksByKeyword(keyword);
+        // 1. 알라딘 API를 통해 키워드 기반 도서 검색 (페이지 포함)
+        List<Map<String, Object>> books = aladinService.getBooksByKeyword(keyword, page);
 
-        // 2. 검색어와 결과를 모델에 담음
+        // 2. 검색어, 결과, 페이지 정보 모델에 담기
         model.addAttribute("books", books);
         model.addAttribute("keyword", keyword);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", 10);  // 최대 3페이지 제한
 
         // 3. 로그인한 사용자 이름이 있으면 전달
         String token = null;
@@ -62,14 +81,19 @@ public class BookController {
 
     @GetMapping("/list-view")
     public String showBookList(@RequestParam(defaultValue = "100") int categoryId,
+                               @RequestParam(defaultValue = "1") int page,
                                Model model,
                                HttpServletRequest request) {
 
-        // 카테고리별 책 리스트 조회
-        List<Map<String, Object>> books = aladinService.getBooksByCategory(categoryId);
+        // 1. 카테고리별 책 리스트 조회 (페이지 포함)
+        List<Map<String, Object>> books = aladinService.getBooksByCategory(categoryId, page);
         model.addAttribute("books", books);
+        model.addAttribute("categoryId", categoryId);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", 10); 
+        // 최대 3페이지 제한
 
-        // 쿠키에서 Authorization 토큰 꺼내기
+        // 2. 로그인 사용자 이름 전달
         String token = null;
         if (request.getCookies() != null) {
             token = Arrays.stream(request.getCookies())
@@ -79,7 +103,6 @@ public class BookController {
                     .orElse(null);
         }
 
-        // 토큰이 존재하고 유효하면 토큰에서 userName 꺼내서 뷰에 전달
         if (token != null && jwtProvider.validateToken(token)) {
             String userName = jwtProvider.getUserName(token);
             model.addAttribute("userName", userName);
