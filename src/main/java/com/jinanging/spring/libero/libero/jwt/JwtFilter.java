@@ -1,7 +1,13 @@
 package com.jinanging.spring.libero.libero.jwt;
 
-import java.io.IOException;
-
+import com.jinanging.spring.libero.libero.user.domain.User;
+import com.jinanging.spring.libero.libero.user.service.UserService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,12 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
 
 @Slf4j
 @Component
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
+    private final UserService userService;  // UserService 주입
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -36,12 +38,21 @@ public class JwtFilter extends OncePerRequestFilter {
         // 2. 토큰이 존재하고 유효하다면 인증 처리
         if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
             String loginId = jwtProvider.getLoginID(token);
+            String userName = jwtProvider.getUserName(token);
 
+            // loginId로 User 조회
+            User user = userService.findByLoginId(loginId);
+
+            if (user != null) {
+                // 세션에 userId, userName 저장
+                request.getSession().setAttribute("userId", user.getId());
+                request.getSession().setAttribute("userName", userName);
+            }
+
+            // Spring Security 인증 컨텍스트 세팅
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(loginId, null, null);
-
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
@@ -49,12 +60,12 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // 헤더 Authorization 또는 쿠키에서 토큰을 꺼내는 메서드
+    // 헤더 Authorization 또는 쿠키에서 토큰 추출
     private String resolveToken(HttpServletRequest request) {
         // 1) Authorization 헤더에서 토큰 추출 (Bearer 토큰)
         String token = request.getHeader("Authorization");
         if (StringUtils.hasText(token) && token.startsWith("Bearer ")) {
-            return token.substring(7);  // "Bearer " 다음 부분만 리턴
+            return token.substring(7);
         }
 
         // 2) 헤더에 없으면 쿠키에서 "Authorization" 이름으로 토큰 찾기

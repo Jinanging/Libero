@@ -1,7 +1,6 @@
 package com.jinanging.spring.libero.libero.user;
 
-import java.util.Map;
-
+import org.springframework.http.ResponseCookie;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,11 +39,16 @@ public class UserRestController {
 
 	     if ("success".equals(result.getResult())) {
 	         String token = result.getData();
-	         Cookie cookie = new Cookie("Authorization", token);
-	         cookie.setHttpOnly(true); // JavaScript에서 접근 못하게!
-	         cookie.setPath("/"); 
-	         cookie.setMaxAge(60 * 60); 
-	         response.addCookie(cookie);
+
+	         ResponseCookie cookie = ResponseCookie.from("Authorization", token)
+	             .httpOnly(true)
+	             .secure(false) 
+	             .path("/")
+	             .maxAge(60 * 60 * 24) 
+	             .sameSite("Lax")  
+	             .build();
+
+	         response.addHeader("Set-Cookie", cookie.toString());
 	     }
 
 	     return result;

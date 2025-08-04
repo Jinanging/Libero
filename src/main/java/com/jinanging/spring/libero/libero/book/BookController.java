@@ -30,19 +30,36 @@ public class BookController {
     }
     // 책 디테일 뷰 가져오기
     @GetMapping("/detail-view")
-    public String bookDetail(@RequestParam("itemId") long itemId, Model model) {
+    public String bookDetail(@RequestParam("itemId") long itemId, Model model, HttpServletRequest request) {
+        // 1. 책 정보 조회
         List<Map<String, Object>> books = aladinService.getBooksById(itemId);
 
         if (books != null && !books.isEmpty() && books.get(0) != null) {
-            Map<String, Object> book = books.get(0);
-            model.addAttribute("book", book);
+            model.addAttribute("book", books.get(0));
         } else {
-            // 에러 페이지로 보내거나 빈 모델 넘기기
             model.addAttribute("book", new HashMap<>());
             model.addAttribute("error", "도서 정보를 불러올 수 없습니다.");
         }
 
-        return "book/detail"; // /templates/book/detail.html
+        // 2. 로그인 정보 쿠키에서 꺼내서 userName 모델에 넣기
+        String token = null;
+        if (request.getCookies() != null) {
+            token = Arrays.stream(request.getCookies())
+                    .filter(cookie -> "Authorization".equals(cookie.getName()))
+                    .findFirst()
+                    .map(jakarta.servlet.http.Cookie::getValue)
+                    .orElse(null);
+        }
+
+        if (token != null && jwtProvider.validateToken(token)) {
+            String userName = jwtProvider.getUserName(token);
+            model.addAttribute("userName", userName);
+        } else {
+            model.addAttribute("userName", null);
+        }
+
+        // 3. 뷰 이름 반환
+        return "book/detail";  // /templates/book/detail.html
     }
     @GetMapping("/search-view")
     public String showSearchList(@RequestParam String keyword,

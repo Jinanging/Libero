@@ -50,15 +50,18 @@
 
   <div class="book-grid" th:if="${!#lists.isEmpty(books)}">
     <div th:each="book : ${books}" class="book-item">
-      <img th:src="${#strings.replace(book.cover, 'coversum', 'cover500')}" alt="책 이미지" />
-      <div class="book-info">
-        <div class="book-title" th:text="${book.title}">책 제목</div>
-        <div class="book-author" th:text="${book.author}">작가 이름</div>
-      </div>
+      <a th:href="@{/libero/book/detail-view(itemId=${book.itemId})}" class="book-link">
+        <img th:src="${#strings.replace(book.cover, 'coversum', 'cover500')}" alt="책 이미지" />
+        <div class="book-info">
+          <div class="book-title" th:text="${book.title}">책 제목</div>
+          <div class="book-author" th:text="${book.author}">작가 이름</div>
+        </div>
+      </a>
     </div>
   </div>
 </main>
- <div class="pagination d-flex justify-content-center my-4">
+
+<div class="pagination d-flex justify-content-center my-4">
   <!-- 첫 페이지로 이동 -->
   <a class="btn btn-outline-secondary mx-1"
      th:href="@{/libero/book/search-view(keyword=${keyword}, page=1)}"
