@@ -1,315 +1,303 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>Libero Join</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>Libero - 독서일기</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+    }
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        .image-box {
-            width: 100%;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-        .image-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            display: block;
-        }
-        .join-box {
-            position: absolute;
-            top: 50%;
-            left: 75%;
-            transform: translate(-50%, -50%);
-            background: transparent;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            color: #000;
-            min-width: 400px;
-        }
-        .join-box h2 {
-            font-family: 'Great Vibes', cursive;
-            font-size: 36px;
-            margin-bottom: 20px;
-            color: #000;
-        }
-        .form-control {
-            background: rgba(255, 255, 255, 0.3);
-            border: none;
-            border-bottom: 1px solid #000;
-            color: #000;
-            border-radius: 0;
-            margin-bottom: 15px;
-        }
-        .form-control[readonly] {
-            background: rgba(255, 255, 255, 0.3) !important;
-            color: #000 !important;
-            cursor: pointer;
-        }
-        .form-control::placeholder {
-            color: #555;
-        }
-        .btn-custom,
-        .btn-check {
-            background-color: rgba(0,0,0,0.1);
-            color: #000;
-            border: 1px solid #000;
-            width: 100%;
-            transition: background-color 0.3s;
-            font-size: 15px;
-        }
-        .btn-custom:hover,
-        .btn-check:hover {
-            background-color: rgba(0,0,0,0.2);
-            color: #fff;
-        }
-        .input-group-append .btn-check {
-            width: auto;
-            white-space: nowrap;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        .address-group {
-            text-align: left;
-            margin-top: 20px;
-        }
-        .address-group input[type="button"] {
-            width: 100%;
-            margin-bottom: 10px;
-            font-size: 15px;
-            font-family: Arial, sans-serif;
-        }
-        .address-group input[type="text"] {
-            width: 100%;
-        }
-        .postcode-modal {
-            display: none;
-            position: fixed;
-            z-index: 9999;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 500px;
-            height: 500px;
-            background: #fff;
-            border: 2px solid #000;
-            box-shadow: 0 0 15px rgba(0,0,0,0.3);
-        }
-        .postcode-close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 18px;
-            z-index: 10000;
-            background: #fff;
-            padding: 4px 10px;
-        }
-    </style>
+    #wrap {
+      display: flex;
+      height: 100vh;
+    }
+
+    .sidebar {
+      width: 250px;
+      background-color: transparent;
+      padding: 30px 15px;
+    }
+
+    .sidebar h2 {
+      font-family: 'Great Vibes', cursive;
+      color: #f8f9fa;
+      font-size: 28px;
+      margin-bottom: 30px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: #fff;
+      background-color: rgba(0, 0, 0, 0.4);
+      text-decoration: none;
+      margin: 10px 0;
+      padding: 10px 15px;
+      font-size: 18px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .sidebar a:hover {
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #ffc107;
+    }
+
+    .content {
+      flex: 1;
+      padding: 40px;
+      background-image: url('/static/image/userpage.jpg.png');
+      background-size: cover;
+      background-position: center;
+      overflow-y: auto;
+      color: #333;
+    }
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .diary-item {
+      background: #fff;
+      margin-bottom: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      color: #333;
+    }
+
+    .diary-actions button {
+      margin-right: 10px;
+    }
+
+    textarea, input {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    #cancelEditBtn {
+      margin-left: 10px;
+    }
+  </style>
 </head>
-
 <body>
 
 <div id="wrap">
-    <div class="image-box">
-        <img src="/static/image/userpage.jpg.png" alt="User Page Image">
-        <div class="join-box">
-            <h2>Join Libero</h2>
+  <div class="sidebar">
+    <h2 class="text-dark">My Diary</h2>
+    <a href="#" onclick="showPage('write')">📖 일기 작성하기</a>
+    <a href="#" onclick="showPage('list')">📚 일기 리스트</a>
+    <a href="/libero/book/list-view?categoryId=1" class="btn btn-primary mt-3">📚 메인화면으로 돌아가기</a>
+  </div>
 
-            <div class="input-group">
-                <input id="idInput" type="text" class="form-control" placeholder="아이디">
-                <div class="input-group-append">
-                    <button id="checkDuplicateBtn" class="btn btn-check">중복확인</button>
-                </div>
-            </div>
-
-            <input id="passwordInput" type="password" class="form-control" placeholder="비밀번호">
-            <input id="passwordCheckInput" type="password" class="form-control" placeholder="비밀번호 확인">
-            <input id="nameInput" type="text" class="form-control" placeholder="닉네임">
-
-            <div class="address-group">
-                <input type="text" id="sample3_postcode" class="form-control" placeholder="우편번호" readonly>
-                <input type="button" onclick="sample3_execDaumPostcode()" value="우편번호 찾기" class="btn btn-check">
-                <input type="text" id="sample3_address" class="form-control" placeholder="주소" readonly>
-                <input type="text" id="sample3_extraAddress" class="form-control" placeholder="참고항목" readonly>
-                <input type="text" id="sample3_detailAddress" class="form-control" placeholder="상세주소">
-            </div>
-
-            <button id="joinBtn" class="btn btn-custom mt-3">회원가입</button>
-        </div>
-    </div>
-</div>
-
-<div id="postcodeModal" class="postcode-modal">
-    <div class="postcode-close-btn" onclick="closePostcodeModal()">×</div>
-    <div id="postcodeEmbed" style="width:100%; height:100%;"></div>
+  <div class="content" id="content-area">
+    <!-- 여기에 일기 작성 or 리스트 콘텐츠가 동적으로 표시됩니다 -->
+  </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 
 <script>
-    let isIdChecked = false;
+  const token = localStorage.getItem('accessToken'); // JWT 토큰
+  if (!token) {
+    alert('로그인이 필요합니다.');
+  }
 
-    $("#checkDuplicateBtn").on("click", function() {
-        let id = $("#idInput").val();
+  function showPage(type) {
+    const content = document.getElementById('content-area');
+    let html = '';
 
-        if (id == "") {
-            alert("아이디를 입력해주세요!");
-            return;
+    if (type === 'write') {
+      html = `
+        <div class="card">
+          <h3>📝 일기 작성 / 수정</h3>
+          <form id="diaryForm" onsubmit="event.preventDefault(); submitDiary();">
+            <input type="hidden" id="diaryId" value="" />
+            <div class="form-group">
+              <label for="bookTitle">책 제목</label>
+              <input type="text" id="bookTitle" placeholder="책 제목을 입력하세요" required />
+            </div>
+            <div class="form-group">
+              <label for="readDate">읽은 날짜</label>
+              <input type="date" id="readDate" required />
+            </div>
+            <div class="form-group">
+              <label for="diaryContent">내용</label>
+              <textarea id="diaryContent" rows="5" required placeholder="오늘 하루는 어땠나요?"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">저장</button>
+            <button type="button" id="cancelEditBtn" class="btn btn-secondary" style="display:none;">취소</button>
+            <div id="message" style="margin-top:10px;"></div>
+          </form>
+        </div>
+      `;
+      content.innerHTML = html;
+
+      $('#cancelEditBtn').click(resetForm);
+    }
+    else if (type === 'list') {
+      html = `
+        <div class="card">
+          <h3>📖 작성한 일기 목록</h3>
+          <div id="diaryList"></div>
+        </div>
+      `;
+      content.innerHTML = html;
+      loadDiaryList();
+    }
+  }
+
+  function escapeHtml(text) {
+    return text.replace(/&/g, "&amp;")
+               .replace(/</g, "&lt;")
+               .replace(/>/g, "&gt;")
+               .replace(/"/g, "&quot;")
+               .replace(/'/g, "&#039;");
+  }
+
+  function loadDiaryList() {
+    $.ajax({
+      url: '/libero/book/diary/list',
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` },
+      success: function(data) {
+        const container = $('#diaryList');
+        container.empty();
+
+        if(data.length === 0) {
+          container.append('<p>작성된 독서일기가 없습니다.</p>');
+          return;
         }
 
-        $.ajax({
-            type: "get",
-            url: "/libero/user/isDuplicate",
-            data: { loginId: id },
-            success: function(response) {
-                if (response.result === "fail") {
-                    alert("이미 사용 중인 아이디입니다.");
-                    isIdChecked = false;
-                } else {
-                    alert("사용 가능한 아이디입니다.");
-                    isIdChecked = true;
-                }
-            },
-            error: function() {
-                alert("중복확인 중 오류가 발생했습니다.");
-                isIdChecked = false;
-            }
+        data.forEach(diary => {
+          const bookTitle = diary.bookTitle || '알 수 없는 책';
+          container.append(`
+            <div class="diary-item" data-id="${diary.id}">
+              <h5>${escapeHtml(bookTitle)} (${diary.readDate})</h5>
+              <p>${escapeHtml(diary.contents)}</p>
+              <div class="diary-actions">
+                <button class="btn btn-sm btn-info edit-btn" data-id="${diary.id}">수정</button>
+                <button class="btn btn-sm btn-danger delete-btn" data-id="${diary.id}">삭제</button>
+              </div>
+            </div>
+          `);
         });
+      },
+      error: function(xhr) {
+        if(xhr.status === 401) alert('로그인이 필요합니다.');
+        else alert('독서일기 목록을 불러오는 데 실패했습니다.');
+      }
     });
+  }
 
-    $("#joinBtn").on("click", function() {
-        let id = $("#idInput").val();
-        let password = $("#passwordInput").val();
-        let passwordCheck = $("#passwordCheckInput").val();
-        let name = $("#nameInput").val();
-        let postcode = $("#sample3_postcode").val();
-        let address = $("#sample3_address").val();
-        let detailAddress = $("#sample3_detailAddress").val();
+  function submitDiary() {
+    const id = $('#diaryId').val();
+    const bookTitle = $('#bookTitle').val().trim();
+    const readDate = $('#readDate').val();
+    const contents = $('#diaryContent').val().trim();
+    const messageEl = $('#message');
 
-        if (id == "") {
-            alert("아이디를 입력해주세요!");
-            return;
-        }
+    messageEl.text('');
+    messageEl.css('color', 'red');
 
-        if (!isIdChecked) {
-            alert("아이디 중복확인을 해주세요!");
-            return;
-        }
-
-        if (password == "") {
-            alert("비밀번호를 입력해주세요!");
-            return;
-        }
-
-        if (passwordCheck == "") {
-            alert("비밀번호 확인을 입력해주세요!");
-            return;
-        }
-
-        if (password != passwordCheck) {
-            alert("비밀번호가 일치하지 않습니다!");
-            return;
-        }
-
-        if (name == "") {
-            alert("닉네임을 입력해주세요!");
-            return;
-        }
-
-        if (postcode == "") {
-            alert("우편번호를 입력해주세요!");
-            return;
-        }
-
-        if (address == "") {
-            alert("주소를 입력해주세요!");
-            return;
-        }
-
-        if (detailAddress == "") {
-            alert("상세주소를 입력해주세요!");
-            return;
-        }
-        $.ajax({
-            type: "post",
-            url: "/libero/user/join",
-            data: {
-                loginId: id,
-                password: password,
-                name: name,
-                address: address,
-                addressDetail: detailAddress,
-                addressNumber: postcode
-            },
-            success: function(response) {
-                if (response.result === "success") {
-                    location.href = "/libero/user/login-view";
-                } else {
-                    alert("회원가입 실패: " + response.message);
-                }
-            },
-            error: function() {
-                alert("회원가입 중 에러 발생");
-            }
-        });
-    });
-
-    function sample3_execDaumPostcode() {
-        document.getElementById('postcodeModal').style.display = 'block';
-        document.body.onkeydown = function(event) {
-            if (event.key === "Escape") {
-                closePostcodeModal();
-            }
-        };
-
-        new daum.Postcode({
-            oncomplete: function(data) {
-                var addr = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
-                var extraAddr = '';
-
-                if (data.userSelectedType === 'R') {
-                    if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
-                        extraAddr += data.bname;
-                    }
-                    if (data.buildingName !== '' && data.apartment === 'Y') {
-                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-                    }
-                    if (extraAddr !== '') {
-                        extraAddr = ' (' + extraAddr + ')';
-                    }
-                    document.getElementById("sample3_extraAddress").value = extraAddr;
-                } else {
-                    document.getElementById("sample3_extraAddress").value = '';
-                }
-
-                document.getElementById('sample3_postcode').value = data.zonecode;
-                document.getElementById("sample3_address").value = addr;
-                document.getElementById("sample3_detailAddress").focus();
-
-                closePostcodeModal();
-            },
-            width: '100%',
-            height: '100%'
-        }).embed(document.getElementById('postcodeEmbed'));
+    if (!bookTitle || !readDate || !contents) {
+      messageEl.text('모든 필드를 입력해주세요.');
+      return;
     }
 
-    function closePostcodeModal() {
-        document.getElementById('postcodeModal').style.display = 'none';
-        document.body.onkeydown = null;
-    }
+    const diaryData = {
+      bookTitle: bookTitle,
+      readDate: readDate,
+      contents: contents
+    };
+
+    if(id) diaryData.id = Number(id);
+
+    $.ajax({
+      url: '/libero/book/diary/save',
+      method: 'POST',
+      contentType: 'application/json',
+      headers: { 'Authorization': `Bearer ${token}` },
+      data: JSON.stringify(diaryData),
+      success: function() {
+        messageEl.css('color', 'green');
+        messageEl.text('독서일기가 저장되었습니다.');
+        resetForm();
+        loadDiaryList();
+        showPage('list');
+      },
+      error: function(xhr) {
+        if(xhr.status === 401) messageEl.text('로그인이 필요합니다.');
+        else if(xhr.status === 403) messageEl.text('권한이 없습니다.');
+        else messageEl.text('저장 중 오류가 발생했습니다.');
+      }
+    });
+  }
+
+  function resetForm() {
+    $('#diaryId').val('');
+    $('#bookTitle').val('');
+    $('#readDate').val('');
+    $('#diaryContent').val('');
+    $('#cancelEditBtn').hide();
+    $('#message').text('');
+  }
+
+  $(document).on('click', '.edit-btn', function() {
+    const diaryId = $(this).data('id');
+
+    // 단건 조회 API가 id 기준이어야 하므로 백엔드도 확인 필요
+    $.ajax({
+      url: `/libero/book/diary/detail/${diaryId}`,
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` },
+      success: function(diary) {
+        $('#diaryId').val(diary.id);
+        $('#bookTitle').val(diary.bookTitle);
+        $('#readDate').val(diary.readDate);
+        $('#diaryContent').val(diary.contents);
+        $('#cancelEditBtn').show();
+        showPage('write');
+        $('html, body').animate({ scrollTop: 0 }, 'fast');
+      },
+      error: function() {
+        alert('일기를 불러오는데 실패했습니다.');
+      }
+    });
+  });
+
+  $(document).on('click', '.delete-btn', function() {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+
+    const diaryId = $(this).data('id');
+
+    $.ajax({
+      url: `/libero/book/diary/delete/${diaryId}`,
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` },
+      success: function() {
+        alert('독서일기가 삭제되었습니다.');
+        loadDiaryList();
+      },
+      error: function(xhr) {
+        if(xhr.status === 403) alert('삭제 권한이 없습니다.');
+        else alert('삭제 실패');
+      }
+    });
+  });
+
+  // 초기 페이지: 작성 폼 보여주기
+  $(function() {
+    showPage('write');
+  });
 </script>
 
 </body>

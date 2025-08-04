@@ -408,3 +408,88 @@ footer {
   line-height: 1.6;
   white-space: pre-wrap;
 }
+
+
+/* 댓글 수정/삭제 버튼 영역 */
+.comment-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 10px;
+}
+
+.comment-actions button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.comment-actions button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.comment-actions button:active {
+  background-color: #004085;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.comment-actions button.delete-btn {
+  background-color: #dc3545;
+}
+
+.comment-actions button.delete-btn:hover {
+  background-color: #a71d2a;
+}
+
+.comment-actions button.delete-btn:active {
+  background-color: #7b121e;
+}
+
+/* 댓글 수정용 텍스트 에어리어 */
+.edit-textarea {
+  width: 100%;
+  min-height: 70px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  resize: vertical;
+  margin-top: 8px;
+  box-sizing: border-box;
+  font-family: 'Nanum Gothic', sans-serif;
+  transition: border-color 0.3s ease;
+}
+
+.edit-textarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74,144,226,0.4);
+}
+
+/* 수정 별점 선택 */
+.edit-rating {
+  margin-top: 10px;
+  font-size: 1rem;
+}
+
+.edit-rating-select {
+  margin-left: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.edit-rating-select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 6px rgba(74,144,226,0.4);
+}

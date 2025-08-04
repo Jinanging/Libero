@@ -36,5 +36,10 @@ public class RatingComment {
 	private LocalDateTime createdAt;
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
+	
+	public void update(double rating, String comment) {
+        this.rating = rating;
+        this.comment = comment;
+    }
 
 }

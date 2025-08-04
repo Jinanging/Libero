@@ -38,7 +38,7 @@
   <a href="/libero/book/list-view?categoryId=50966" class="nav-link px-3">음악</a>
   <a href="/libero/book/list-view?categoryId=517" class="nav-link px-3">예술</a>
   <a href="/libero/book/list-view?categoryId=1" class="nav-link px-3">전체</a>
-  <a href="/libero/diary" class="nav-link px-3">독서일기</a>
+  <a href="/libero/book/diary-view" class="nav-link px-3">독서일기</a>
 </nav>
 
 <main class="detail-container d-flex">
@@ -90,10 +90,19 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 <script>
-  // hidden span에서 값 읽기
   var bookId = parseInt(document.getElementById('hiddenBookId').textContent);
   var userName = document.getElementById('hiddenUserName').textContent;
   if(userName === 'null') userName = null;
+
+  // escapeHtml 함수 - XSS 방지
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 
   function loadComments() {
     $.ajax({
@@ -111,11 +120,17 @@
 
         data.forEach(function(item) {
           const stars = '★'.repeat(Math.round(item.rating)) + '☆'.repeat(5 - Math.round(item.rating));
+          const editableButtons = item.editable ? `
+            <button class="edit-btn" data-id="${item.id}">수정</button>
+            <button class="delete-btn" data-id="${item.id}">삭제</button>
+          ` : '';
+
           const commentItem = `
-            <div class="comment-item">
+            <div class="comment-item" data-id="${item.id}">
               <div class="comment-stars">${stars}</div>
-              <div class="comment-text">${item.comment}</div>
-              <div class="comment-user">작성자: ${item.userName || '익명'}</div>
+              <div class="comment-text">${escapeHtml(item.comment)}</div>
+              <div class="comment-user">작성자: ${escapeHtml(item.userName)}</div>
+              <div class="comment-actions">${editableButtons}</div>
             </div>
           `;
           commentList.append(commentItem);
@@ -126,6 +141,118 @@
       }
     });
   }
+
+  // 수정 폼 열기
+  $(document).on('click', '.edit-btn', function() {
+    const commentId = $(this).data('id');
+    const commentDiv = $(`.comment-item[data-id=${commentId}]`);
+    const originalText = commentDiv.find('.comment-text').text();
+    const originalStars = commentDiv.find('.comment-stars').text().replace(/☆/g, '').length;
+
+    // 이미 수정폼이 열려 있으면 닫기
+    if (commentDiv.find('textarea').length > 0) {
+      return;
+    }
+
+    const editForm = `
+      <textarea class="edit-textarea">${escapeHtml(originalText)}</textarea>
+      <div class="edit-rating">
+        별점: 
+        <select class="edit-rating-select">
+          <option value="5" ${originalStars === 5 ? 'selected' : ''}>5</option>
+          <option value="4" ${originalStars === 4 ? 'selected' : ''}>4</option>
+          <option value="3" ${originalStars === 3 ? 'selected' : ''}>3</option>
+          <option value="2" ${originalStars === 2 ? 'selected' : ''}>2</option>
+          <option value="1" ${originalStars === 1 ? 'selected' : ''}>1</option>
+        </select>
+      </div>
+      <button class="update-btn" data-id="${commentId}">저장</button>
+      <button class="cancel-btn" data-id="${commentId}">취소</button>
+    `;
+
+    commentDiv.find('.comment-text').hide();
+    commentDiv.find('.comment-actions').hide();
+    commentDiv.append(editForm);
+  });
+
+  // 수정 취소
+  $(document).on('click', '.cancel-btn', function() {
+    const commentId = $(this).data('id');
+    const commentDiv = $(`.comment-item[data-id=${commentId}]`);
+    commentDiv.find('textarea').remove();
+    commentDiv.find('.edit-rating').remove();
+    commentDiv.find('.update-btn').remove();
+    commentDiv.find('.cancel-btn').remove();
+    commentDiv.find('.comment-text').show();
+    commentDiv.find('.comment-actions').show();
+  });
+
+  // 수정 저장
+  $(document).on('click', '.update-btn', function() {
+    const commentId = $(this).data('id');
+    const commentDiv = $(`.comment-item[data-id=${commentId}]`);
+    const newComment = commentDiv.find('textarea').val().trim();
+    const newRating = commentDiv.find('.edit-rating-select').val();
+
+    if (newComment.length === 0) {
+      alert('댓글을 입력해주세요.');
+      return;
+    }
+
+    $.ajax({
+      url: `/libero/book/review/${commentId}`,
+      method: 'PUT',
+      contentType: 'application/json',
+      xhrFields: { withCredentials: true },
+      data: JSON.stringify({
+        rating: newRating,
+        comment: newComment
+      }),
+      success: function(response) {
+        alert('리뷰가 수정되었습니다!');
+        loadComments();
+      },
+      error: function(xhr) {
+        if (xhr.status === 403) {
+          alert('수정 권한이 없습니다.');
+        } else if (xhr.status === 404) {
+          alert('리뷰를 찾을 수 없습니다.');
+        } else if (xhr.status === 401) {
+          alert('로그인이 필요합니다.');
+        } else {
+          alert('리뷰 수정에 실패했습니다.');
+        }
+      }
+    });
+  });
+
+  // 삭제 버튼 클릭
+  $(document).on('click', '.delete-btn', function() {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+
+    const commentId = $(this).data('id');
+
+    $.ajax({
+      url: `/libero/book/review/${commentId}`,
+      method: 'DELETE',
+      xhrFields: { withCredentials: true },
+      success: function(response) {
+        alert('리뷰가 삭제되었습니다!');
+        loadComments();
+      },
+      error: function(xhr) {
+        if (xhr.status === 403) {
+          alert('삭제 권한이 없습니다.');
+        } else if (xhr.status === 404) {
+          alert('리뷰를 찾을 수 없습니다.');
+        } else if (xhr.status === 401) {
+          alert('로그인이 필요합니다.');
+        } else {
+          alert('리뷰 삭제에 실패했습니다.');
+        }
+      }
+    });
+  });
 
   $(document).ready(function() {
     loadComments();
@@ -165,7 +292,9 @@
           loadComments();
         },
         error: function(xhr) {
-          if (xhr.status === 401) {
+          if (xhr.status === 400) {
+            alert('이미 리뷰를 작성하셨습니다.');
+          } else if (xhr.status === 401) {
             alert('로그인이 필요합니다.');
           } else {
             alert('리뷰 등록에 실패했습니다.');

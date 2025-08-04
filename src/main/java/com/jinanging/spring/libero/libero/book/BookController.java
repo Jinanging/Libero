@@ -28,6 +28,12 @@ public class BookController {
         this.aladinService = aladinService;
         this.jwtProvider = jwtProvider;
     }
+    
+    @GetMapping("/diary-view")
+    public String diary() {
+    	
+    	return "book/diary";
+    }
     // 책 디테일 뷰 가져오기
     @GetMapping("/detail-view")
     public String bookDetail(@RequestParam("itemId") long itemId, Model model, HttpServletRequest request) {
