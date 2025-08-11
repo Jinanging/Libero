@@ -27,6 +27,20 @@ public class AladinService {
         this.ttbKey = ttbKey;
     }
     
+    public Map<String, Object> getBookById(long itemId) {
+        List<Map<String, Object>> result = getBooksById(itemId);
+        if (!result.isEmpty()) {
+            Map<String, Object> book = result.get(0);
+
+            // 여기에 로그 추가 (콘솔에 찍힘)
+            System.out.println("=== API 응답 book 데이터 ===");
+            book.forEach((k,v) -> System.out.println(k + " : " + v));
+
+            return book;
+        }
+        return null;
+    }
+    
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> getBooksById(long itemId) {
         String url = UriComponentsBuilder.fromUriString("http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx")

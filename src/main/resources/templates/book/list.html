@@ -21,7 +21,7 @@
 		  <span th:if="${userName != null}">
 		    <span th:text="${userName}">닉네임</span> | 
 		    <a class = "btn" id ="logoutBtn">로그아웃</a>
-		    <a class ="btn">장바구니</a>
+		    <a href ="http://localhost:8080/libero/cart/view" class ="btn">장바구니</a>
 		  </span>
 		  <span th:unless="${userName != null}">
 		    <a href="/libero/user/login-view">로그인</a> | 

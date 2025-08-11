@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Libero - 장바구니</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <style>
+    .price-text {
+      color: #1e392a;
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-top: 0.3rem;
+    }
+    .price-none {
+      color: #a0a0a0;
+      font-style: italic;
+      margin-top: 0.3rem;
+    }
+    .total-price {
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: #1e392a;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Libero</div>
+  <form class="search-bar d-flex" method="get" action="/libero/book/search-view">
+    <input type="text" name="keyword" placeholder="도서를 검색해보세요" required />
+    <button type="submit" aria-label="검색">🔍</button>
+  </form>
+  <div class="login-btns">
+    <span>
+      <span th:text="${nickname}">닉네임</span> | 
+      <a class="btn" href="/logout">로그아웃</a>
+      <a class="btn" th:href="@{/libero/cart/view}">장바구니 (<span th:text="${cartList.size()}">0</span>)</a>
+    </span>
+  </div>
+</header>
+
+<nav class="d-flex justify-content-between gap-3 py-2 bg-light">
+  <a href="/libero/book/list-view?categoryId=656" class="nav-link px-3">문학</a>
+  <a href="/libero/book/list-view?categoryId=38401" class="nav-link px-3">컴퓨터</a>
+  <a href="/libero/book/list-view?categoryId=1237" class="nav-link px-3">종교</a>
+  <a href="/libero/book/list-view?categoryId=798" class="nav-link px-3">사회과학</a>
+  <a href="/libero/book/list-view?categoryId=90855" class="nav-link px-3">자연과학</a>
+  <a href="/libero/book/list-view?categoryId=50966" class="nav-link px-3">음악</a>
+  <a href="/libero/book/list-view?categoryId=517" class="nav-link px-3">예술</a>
+  <a href="/libero/book/list-view?categoryId=1" class="nav-link px-3">전체</a>
+  <a href="/libero/book/diary-view" class="nav-link px-3">독서일기</a>
+</nav>
+
+<main class="container my-5">
+  <h2 class="mb-4">🛒 장바구니</h2>
+
+  <div th:each="cartItem : ${cartList}" 
+       class="cart-item shadow-sm p-3 mb-4 bg-white rounded d-flex align-items-center"
+       data-price-th="${cartItem['price']}"
+       data-count-th="${cartItem['cart'].count}">
+       
+    <img th:src="${cartItem['cover']}" alt="책 표지" class="img-thumbnail mr-3" style="width:100px;height:150px;" />
+    
+    <div class="flex-grow-1">
+      <h5 th:text="${cartItem['title']}">예시 책 제목</h5>
+      
+      <p th:if="${cartItem['price'] != null}" class="price-text price" th:text="${cartItem['price']}">10000</p>
+      <p th:if="${cartItem['price'] == null}" class="price-none">가격 정보 없음</p>
+
+      <div class="d-flex align-items-center">
+        <!-- 수량 감소 -->
+        <form th:action="@{/libero/cart/decrease/{cartId}(cartId=${cartItem['cart'].id})}" method="post" class="mr-2">
+          <button type="submit" class="btn btn-sm btn-outline-secondary">-</button>
+        </form>
+
+        <span class="font-weight-bold mx-2 count" th:text="${cartItem['cart'].count}">1</span>
+
+        <!-- 수량 증가 -->
+        <form th:action="@{/libero/cart/increase/{cartId}(cartId=${cartItem['cart'].id})}" method="post" class="ml-2">
+          <button type="submit" class="btn btn-sm btn-outline-secondary">+</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 개별 합계 -->
+    <div class="ml-4 total-item text-right" style="width:120px; font-weight:bold; font-size:1.1rem;">0원</div>
+
+    <!-- 삭제 버튼 -->
+    <form th:action="@{/libero/cart/delete/{cartId}(cartId=${cartItem['cart'].id})}" method="post" class="ml-3">
+      <button type="submit" class="btn btn-danger">삭제</button>
+    </form>
+  </div>
+
+  <!-- 전체 합계 표시 -->
+  <div class="text-right mt-4">
+    <span class="total-price">총 금액: <span id="grandTotal">0</span>원</span>
+  </div>
+
+  <!-- 전체 주문 버튼 -->
+  <div class="text-right mt-3">
+    
+      <a href="/libero/cart/end"  class="btn btn-primary">전체 주문하기</a>
+  </div>
+
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  function formatNumber(num) {
+    return num.toLocaleString();
+  }
+
+  function updateTotals() {
+    let grandTotal = 0;
+    document.querySelectorAll('.cart-item').forEach(item => {
+      let price = parseInt(item.querySelector('.price')?.textContent.replace(/[^0-9]/g, '') || '0');
+      let count = parseInt(item.querySelector('.count')?.textContent || '0');
+      let total = price * count;
+      item.querySelector('.total-item').textContent = formatNumber(total) + '원';
+      grandTotal += total;
+    });
+    document.getElementById('grandTotal').textContent = formatNumber(grandTotal);
+  }
+
+  // 페이지 로드 시 계산
+  updateTotals();
+});
+</script>
+
+</body>
+</html>
